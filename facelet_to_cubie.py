@@ -4,7 +4,7 @@ from cube_model import Cube
 
 # FACELET POSITIONS (using the standard Singmaster orientation)
 #
-# Each face has indicies 1..8:
+# Each face has indicies 0..8:
 # 0 1 2
 # 3 4 5
 # 6 7 8
@@ -12,7 +12,7 @@ from cube_model import Cube
 # Face names:
 # U, R, F, D, L, B
 
-# For each corner: (facelet positions), (ordered color scheme)
+# For each corner position we list the three facelets (face, index)
 corner_facelets = [
     (("U", 8), ("R", 0), ("F", 2)),  # URF
     (("U", 6), ("F", 0), ("L", 2)),  # UFL
@@ -24,6 +24,8 @@ corner_facelets = [
     (("D", 8), ("R", 8), ("B", 6)),  # DRB
 ]
 
+# For each corner cubie, assign the order
+# This tells the expected face that holds the UI/D oriented sticker first
 corner_color_order = [
     ("U", "R", "F"),  # URF
     ("U", "F", "L"),  # UFL
@@ -35,7 +37,7 @@ corner_color_order = [
     ("D", "R", "B"),  # DRB
 ]
 
-# Edge data: (facelet locations), (color order)
+# Edges: facelet positions for each edge position
 edge_facelets = [
     (("U", 5), ("R", 1)),  # UR
     (("U", 7), ("F", 1)),  # UF
@@ -51,6 +53,7 @@ edge_facelets = [
     (("D", 1), ("B", 7)),  # DB
 ]
 
+#Edge colour order: (first face, second face) for the oriented edge cubie index
 edge_color_order = [
     ("U", "R"),
     ("U", "F"),
@@ -83,13 +86,14 @@ def facelets_to_cubie(facelets):
     ep = [-1]*12
     eo = [0]*12
 
+    #Precompute the centre colours for canonical faces (to define cubie colour identities)
+    centres = {f: facelets[f][4] for f in ("U", "R", "F", "D", "L", "B")}
+
     # Corners
 
     for pos in range(8):
         # read the three colours on the corner
-        f1, i1 = corner_facelets[pos][0]
-        f2, i2 = corner_facelets[pos][1]
-        f3, i3 = corner_facelets[pos][2]
+        (f1, i1), (f2, i2), (f3, i3) = corner_facelets[pos]
         colours = [
             get_colour(facelets, f1, i1),
             get_colour(facelets, f2, i2),
@@ -99,22 +103,29 @@ def facelets_to_cubie(facelets):
         # Find the cubie that has these colours
         found = False
         for c_idx in range(8):
-            scheme = corner_color_order[c_idx]
-            cubie_colours = [facelets[f][4] for f in scheme]
-            if set(colours) == set(cubie_colours):
-                cp[pos] = c_idx
-                
-                # Determine Orientation:
-                # Tells how many rotations are needed so that the sticker belonging to a position is there
-                if colours[0] == cubie_colours[0]:
-                    co[pos] = 0
-                elif colours[1] == cubie_colours[0]:
-                    co[pos] = 1
-                else:
-                    co[pos] = 2
-                
-                found = True
-                break
+            # canonical colours for this cubie = centers at the faces listed in corner_color_order[c_idx]
+            canon_faces = corner_color_order[c_idx]
+            canon_colours = [centres[canon_faces[0]],
+                            centres[canon_faces[1]],
+                            centres[canon_faces[2]]]
+            
+            # unordered match: same set of three colours
+            if set(colours) != set(canon_colours):
+                continue
+
+            # found which cubie sits at position 'pos'
+            cp[pos] = c_idx
+
+            # Determine orientation
+            if colours[0] == canon_colours[0]:
+                co[pos] = 0
+            elif colours[1] == canon_colours[0]:
+                co[pos] = 1
+            else:
+                co[pos] = 2
+            
+            found = True
+            break
         if not found:
             raise ValueError(f"Invalid corner at position {pos}, colours = {colours}")
     
@@ -130,14 +141,16 @@ def facelets_to_cubie(facelets):
         found = False
         for e_idx in range(12):
             fA, fB = edge_color_order[e_idx]
-            cA = facelets[fA][4]
-            cB = facelets[fB][4]
+            cA = centres[fA]
+            cB = centres[fB]
 
-            if set(colours) == set([cA, cB]):
-                ep[pos] = e_idx
-                eo[pos] = 0 if colours[0] == cA else 1
-                found = True
-                break
+            if set(colours) != {cA, cB}:
+                continue
+
+            ep[pos] = e_idx
+            eo[pos] = 0 if colours[0] == cA else 1
+            found = True
+            break
 
         if not found:
             raise ValueError(f"Invalid edge at position {pos}, colours={colours}")
