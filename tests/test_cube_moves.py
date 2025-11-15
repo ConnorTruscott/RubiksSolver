@@ -1,0 +1,29 @@
+import pytest
+from cube_model import Cube
+from cube_moves import apply_move, apply_algorithm
+
+@pytest.fixture
+def solved_cube():
+    return Cube()
+
+def test_single_moves(solved_cube):
+    cube_U = apply_move(solved_cube, "U")
+    assert not cube_U.is_solved()
+
+    #Apply prime to see if it solves
+    cube_Uprime = apply_move(cube_U, "U'")
+    assert cube_Uprime.is_solved()
+
+def test_double_move(solved_cube):
+    cube_U2 = apply_move(solved_cube, "U2")
+    assert not cube_U2.is_solved()
+    cube_U2U2 = apply_move(cube_U2, "U2")
+    assert cube_U2U2.is_solved()
+
+def test_algorithm(solved_cube):
+    alg = "R U R' U'"
+    cube_alg = apply_algorithm(solved_cube, alg)
+    assert not cube_alg.is_solved()
+    inverse_alg = "U R U' R'"
+    cube_alg_inverse = apply_algorithm(cube_alg, inverse_alg)
+    assert cube_alg_inverse.is_solved()

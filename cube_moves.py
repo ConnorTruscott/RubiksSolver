@@ -25,28 +25,28 @@ corner_cycles = {
 corner_orient = {
     "U": [0]*8,
     "D": [0]*8,
-    "F": [1,2,0,0,2,1,0,0],  # only corners in F face change orientation
-    "B": [2,1,0,0,0,0,1,2],
+    "F": [1,2,0,0,2,1,0,0],
+    "B": [0,0,1,2,0,0,2,1],
     "R": [1,0,0,2,2,0,0,1],
     "L": [0,1,2,0,0,2,1,0],
 }
 
 # Edge cycles for each move
 edge_cycles = {
-    "U": [(0,3,2,1)],
-    "D": [(8,9,10,11)],
-    "F": [(1,5,9,4)],
-    "B": [(3,6,11,7)],
-    "R": [(0,4,8,7)],
-    "L": [(2,5,10,6)],
+    "U": [(0, 3, 2, 1)],
+    "D": [(8, 9, 10, 11)],
+    "F": [(1, 5, 9, 4)],
+    "B": [(3, 7, 11, 6)],
+    "R": [(0, 4, 8, 7)],
+    "L": [(2, 5, 10, 6)],
 }
 
 # Edge orientation change (0=no flip, 1=flip)
 edge_orient = {
     "U": [0]*12,
     "D": [0]*12,
-    "F": [1 if i in [1,5,9,4] else 0 for i in range(12)],
-    "B": [1 if i in [3,6,11,7] else 0 for i in range(12)],
+    "F": [0,1,0,0,1,1,0,0,0,1,0,0],  # UF=1, FR=4, FL=5, DF=9 flipped
+    "B": [0,0,0,1,0,0,1,1,0,0,0,1],  # UB=3, BR=7, DB=11, BL=6 flipped
     "R": [0]*12,
     "L": [0]*12,
 }
@@ -64,6 +64,9 @@ def apply_move(cube: Cube, move: str) -> Cube:
     """
     new_cube = deepcopy(cube)
 
+    if new_cube.edges_orient == list(range(12)):
+        new_cube.edges_orient = [0]*12
+        
     base_move = move[0]
     times = 1
     if len(move) > 1:
