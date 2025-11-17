@@ -77,6 +77,11 @@ def test_simple_algo(solved_cube):
     cube_alg = apply_algorithm(solved_cube, alg)
     assert cube_alg.is_solved()
 
+def test_move_with_prime(solved_cube):
+    alg = "R R' R R'"
+    cube_alg = apply_algorithm(solved_cube, alg)
+    assert cube_alg.is_solved()
+
 def test_algorithm(solved_cube):
     alg = "R U R' U'"
     cube_alg = apply_algorithm(solved_cube, alg)
