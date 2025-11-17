@@ -23,12 +23,12 @@ corner_cycles = {
 
 # Corner orientation change per move (0,1,2) added mod 3
 corner_orient = {
-    "U": [0]*8,
-    "D": [0]*8,
-    "F": [1,2,0,0,2,1,0,0],
-    "B": [0,0,1,2,0,0,2,1],
-    "R": [1,0,0,2,2,0,0,1],
-    "L": [0,1,2,0,0,2,1,0],
+    "U": [0,0,0,0,0,0,0,0],
+    "D": [0,0,0,0,0,0,0,0],
+    "F": [1,1,0,0,2,2,0,0],
+    "B": [0,0,1,1,0,0,2,2],
+    "R": [1,0,0,2,1,0,0,2],
+    "L": [1,2,0,0,2,1,0,0],
 }
 
 # Edge cycles for each move
@@ -64,8 +64,8 @@ def apply_move(cube: Cube, move: str) -> Cube:
     """
     new_cube = deepcopy(cube)
 
-    if new_cube.edges_orient == list(range(12)):
-        new_cube.edges_orient = [0]*12
+    # if new_cube.edges_orient == list(range(12)):
+    #     new_cube.edges_orient = [0]*12
         
     base_move = move[0]
     times = 1
@@ -76,17 +76,25 @@ def apply_move(cube: Cube, move: str) -> Cube:
             times = 2 # 180 degrees
     
     for _ in range(times):
-        # Corners
         for cycle in corner_cycles[base_move]:
+            # store old perm to know which cubie moves where
+            old_cp = new_cube.corners_perm[:]
+            old_orient = new_cube.corners_orient[:]
             apply_cycle(new_cube.corners_perm, cycle)
-        for i in range(8):
-            new_cube.corners_orient[i] = (new_cube.corners_orient[i] + corner_orient[base_move][i]) % 3
-        
-        # Edges
+            for i, pos in enumerate(cycle):
+                cubie = old_cp[pos]  # the cubie that is being moved
+                new_cube.corners_orient[cycle[i]] = (old_orient[pos] + corner_orient[base_move][cubie]) % 3
+
+
         for cycle in edge_cycles[base_move]:
+            old_ep = new_cube.edges_perm[:]
+            old_eo = new_cube.edges_orient[:]
             apply_cycle(new_cube.edges_perm, cycle)
-        for i in range(12):
-            new_cube.edges_orient[i] = (new_cube.edges_orient[i] + edge_orient[base_move][i]) % 2
+            for i, pos in enumerate(cycle):
+                cubie = old_ep[pos]
+                new_cube.edges_orient[cycle[i]] = (old_eo[pos] + edge_orient[base_move][cubie]) % 2
+        
+
     return new_cube
 
 def apply_algorithm(cube: Cube, alg: str) -> Cube:
@@ -95,6 +103,7 @@ def apply_algorithm(cube: Cube, alg: str) -> Cube:
     """
     new_cube = deepcopy(cube)
     tokens = alg.strip().split()
+    print(tokens)
     for move in tokens:
         new_cube = apply_move(new_cube, move)
     return new_cube

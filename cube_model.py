@@ -12,10 +12,10 @@ class Cube:
         # corners_orient: list of 8 integers (0-2)
         # edges_perm: list of 12 integers (0-11)
         # edges_orient: list of 12 integers (0-1)
-        self.corners_perm = corners_perm or list(range(8))
-        self.corners_orient = corners_orient or [0]*8
-        self.edges_perm = edges_perm or [0]*12
-        self.edges_orient = edges_orient or list(range(12))
+        self.corners_perm = corners_perm if corners_perm is not None else list(range(8))
+        self.corners_orient = corners_orient if corners_orient is not None else [0]*8
+        self.edges_perm = edges_perm if edges_perm is not None else list(range(12))
+        self.edges_orient = edges_orient if edges_orient is not None else [0]*12
 
     def copy(self):
         return deepcopy(self)
