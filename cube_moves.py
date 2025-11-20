@@ -23,13 +23,19 @@ corner_cycles = {
 
 # Corner orientation change per move (0,1,2) added mod 3
 corner_orient = {
-    "U": [0,0,0,0,0,0,0,0],
-    "D": [0,0,0,0,0,0,0,0],
-    "F": [1,1,0,0,2,2,0,0],
-    "B": [0,0,1,1,0,0,2,2],
-    "R": [1,0,0,2,1,0,0,2],
-    "L": [1,2,0,0,2,1,0,0],
+    "U": [0] * 8,
+    "D": [0] * 8,
+    "F": [0] * 8,
+    "B": [0] * 8,
+    "R": [0] * 8,
+    "L": [0] * 8,
 }
+
+
+
+
+
+
 
 # Edge cycles for each move
 edge_cycles = {
@@ -46,10 +52,11 @@ edge_orient = {
     "U": [0]*12,
     "D": [0]*12,
     "F": [0,1,0,0,1,1,0,0,0,1,0,0],  # UF=1, FR=4, FL=5, DF=9 flipped
-    "B": [0,0,0,1,0,0,1,1,0,0,0,1],  # UB=3, BR=7, DB=11, BL=6 flipped
+    "B": [0,0,0,1,0,0,1,1,0,0,0,1],  # UB=3, BR=7, BL=6, DB=11 flipped
     "R": [0]*12,
     "L": [0]*12,
 }
+
 
 # Helper Function: apply cycles
 def apply_cycle(array, cycle):
@@ -59,43 +66,59 @@ def apply_cycle(array, cycle):
     array[cycle[0]] = temp
 
 def apply_move(cube: Cube, move: str) -> Cube:
-    """
-    Returns a new Cube obj after applying the given move.
-    """
-    new_cube = deepcopy(cube)
+    new_cube = cube.copy()
 
-    # if new_cube.edges_orient == list(range(12)):
-    #     new_cube.edges_orient = [0]*12
-        
-    base_move = move[0]
+    base = move[0]
     times = 1
     if len(move) > 1:
         if move[1] == "'":
-            times = 3 # counterclockwise
+            times = 3
         elif move[1] == "2":
-            times = 2 # 180 degrees
-    
+            times = 2
+
     for _ in range(times):
-        for cycle in corner_cycles[base_move]:
-            # store old perm to know which cubie moves where
-            old_cp = new_cube.corners_perm[:]
-            old_orient = new_cube.corners_orient[:]
+        # Snapshot BEFORE this quarter turn
+        old_cp = new_cube.corners_perm[:]
+        old_co = new_cube.corners_orient[:]
+        old_ep = new_cube.edges_perm[:]
+        old_eo = new_cube.edges_orient[:]
+
+        # ---------- CORNER PERMUTATION ----------
+        for cycle in corner_cycles[base]:
             apply_cycle(new_cube.corners_perm, cycle)
+
+        # ---------- CORNER ORIENTATION ----------
+        # Use previous *position* in the cycle, not the cubie index.
+        for cycle in corner_cycles[base]:
             for i, pos in enumerate(cycle):
-                cubie = old_cp[pos]  # the cubie that is being moved
-                new_cube.corners_orient[cycle[i]] = (old_orient[pos] + corner_orient[base_move][cubie]) % 3
+                prev_pos = cycle[i - 1]      # cubie moved from prev_pos -> pos
+                cubie = new_cube.corners_perm[pos]
 
+                # Debug sanity check (optional, remove once happy):
+                assert cubie == old_cp[prev_pos]
 
-        for cycle in edge_cycles[base_move]:
-            old_ep = new_cube.edges_perm[:]
-            old_eo = new_cube.edges_orient[:]
+                twist = corner_orient[base][cubie]
+                new_cube.corners_orient[pos] = (old_co[prev_pos] + twist) % 3
+
+        # ---------- EDGE PERMUTATION ----------
+        for cycle in edge_cycles[base]:
             apply_cycle(new_cube.edges_perm, cycle)
+
+        # ---------- EDGE ORIENTATION ----------
+        for cycle in edge_cycles[base]:
             for i, pos in enumerate(cycle):
-                cubie = old_ep[pos]
-                new_cube.edges_orient[cycle[i]] = (old_eo[pos] + edge_orient[base_move][cubie]) % 2
-        
+                prev_pos = cycle[i - 1]      # cubie moved from prev_pos -> pos
+                cubie = new_cube.edges_perm[pos]
+
+                # Debug sanity check (optional):
+                # assert cubie == old_ep[prev_pos]
+
+                flip = edge_orient[base][cubie]
+                new_cube.edges_orient[pos] = (old_eo[prev_pos] + flip) % 2
 
     return new_cube
+
+
 
 def apply_algorithm(cube: Cube, alg: str) -> Cube:
     """
@@ -106,4 +129,5 @@ def apply_algorithm(cube: Cube, alg: str) -> Cube:
     print(tokens)
     for move in tokens:
         new_cube = apply_move(new_cube, move)
+    print(new_cube)
     return new_cube

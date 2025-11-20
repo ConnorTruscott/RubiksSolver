@@ -85,7 +85,31 @@ def test_move_with_prime(solved_cube):
 def test_algorithm(solved_cube):
     alg = "R U R' U'"
     cube_alg = apply_algorithm(solved_cube, alg)
+    print(f"Cube alg: {cube_alg}")
     assert not cube_alg.is_solved()
     inverse_alg = "U R U' R'"
     cube_alg_inverse = apply_algorithm(cube_alg, inverse_alg)
+    print(f"Cube alg: {cube_alg_inverse}")
+    assert cube_alg_inverse.is_solved()
+
+def test_algo_not_U_R(solved_cube):
+    print(solved_cube)
+    alg = "L D L' D'"
+    cube_alg = apply_algorithm(solved_cube, alg)
+    print(f"Cube alg: {cube_alg}")
+    assert not cube_alg.is_solved()
+    inverse_alg = "D L D' L'"
+    cube_alg_inverse = apply_algorithm(cube_alg, inverse_alg)
+    print(f"Cube alg: {cube_alg_inverse}")
+    assert cube_alg_inverse.is_solved()
+
+def test_algo_F_R(solved_cube):
+    print(solved_cube)
+    alg = "F R F' R'"
+    cube_alg = apply_algorithm(solved_cube, alg)
+    print(f"Cube alg: {cube_alg}")
+    assert not cube_alg.is_solved()
+    inverse_alg = "R F R' F'"
+    cube_alg_inverse = apply_algorithm(cube_alg, inverse_alg)
+    print(f"Cube alg: {cube_alg_inverse}")
     assert cube_alg_inverse.is_solved()
