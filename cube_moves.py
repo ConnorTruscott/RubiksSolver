@@ -13,8 +13,8 @@ from copy import deepcopy
 
 # Corner cycles for each move (list of tuples)
 corner_cycles = {
-    "U": [(0,3,2,1)],
-    "D": [(4,5,6,7)],
+    "U": [(0,1,2,3)],
+    "D": [(4,7,6,5)],
 
     # Corrected:
     "F": [(0,4,5,1)],
@@ -40,8 +40,8 @@ corner_orient = {
 
 # Edge cycles for each move
 edge_cycles = {
-    "U": [(0,3,2,1)],
-    "D": [(8,9,10,11)],
+    "U": [(0,1,2,3)],
+    "D": [(11,10,9,8)],
 
     "F": [(1,4,9,5)],     # corrected
     "B": [(3,6,11,7)],    # corrected
