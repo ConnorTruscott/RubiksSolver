@@ -45,12 +45,12 @@ edge_facelets = [
     (("U", 1), ("B", 1)),  # UB
     (("F", 5), ("R", 3)),  # FR
     (("F", 3), ("L", 5)),  # FL
-    (("B", 3), ("L", 3)),  # BL
-    (("B", 5), ("R", 5)),  # BR
+    (("B", 5), ("L", 3)),  # BL
+    (("B", 3), ("R", 5)),  # BR
     (("D", 5), ("R", 7)),  # DR
-    (("D", 7), ("F", 7)),  # DF
+    (("D", 1), ("F", 7)),  # DF
     (("D", 3), ("L", 7)),  # DL
-    (("D", 1), ("B", 7)),  # DB
+    (("D", 7), ("B", 7)),  # DB
 ]
 
 #Edge colour order: (first face, second face) for the oriented edge cubie index

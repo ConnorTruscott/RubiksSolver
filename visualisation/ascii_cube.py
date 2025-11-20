@@ -80,16 +80,23 @@ def cube_to_facelets(cube: Cube) -> dict[str, list[str]]:
 
     return faces
 
-
-# Correct display remap
+# FACE_DISPLAY_MAP = {
+#     "U": [0,1,2, 3,4,5, 6,7,8],
+#     "D": [0,7,2, 3,4,5, 6,1,8],
+#     "F": [0,1,2, 3,4,5, 6,7,8],
+#     "B": [0,1,2, 5,4,3, 6,7,8],
+#     "L": [0,1,2, 3,4,5, 6,7,8],
+#     "R": [0,1,2, 3,4,5, 6,7,8],
+# }
 FACE_DISPLAY_MAP = {
-    "U": [0,1,2, 3,4,5, 6,7,8],
-    "D": [0,7,2, 3,4,5, 6,1,8],
-    "F": [0,1,2, 3,4,5, 6,7,8],
-    "B": [0,1,2, 5,4,3, 6,7,8],
-    "L": [0,1,2, 3,4,5, 6,7,8],
-    "R": [0,1,2, 3,4,5, 6,7,8],
+    "U": list(range(9)),
+    "D": list(range(9)),
+    "F": list(range(9)),
+    "B": list(range(9)),
+    "L": list(range(9)),
+    "R": list(range(9)),
 }
+
 
 
 def _remap_face_for_display(name: str, face: list[str]) -> list[str]:
