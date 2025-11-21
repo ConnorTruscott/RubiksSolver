@@ -1,4 +1,5 @@
 .vs
 quick_test.py
-/pycache/*
+__pycache__/
+*.py[cod]
 .pytest_cache

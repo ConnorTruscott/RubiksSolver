@@ -7,8 +7,9 @@ from facelet_to_cubie import (
     corner_facelets,
     corner_color_order,
     edge_facelets,
-    edge_color_order,
+    edge_colour_order,
 )
+from cube_to_facelet import cube_to_facelets
 
 USE_COLOR = True
 
@@ -31,63 +32,6 @@ def col(ch: str) -> str:
     return COLOR_MAP.get(ch, "") + ch + RESET
 
 
-CENTRE_COLOURS = {
-    "U": "W",
-    "R": "R",
-    "F": "G",
-    "D": "Y",
-    "L": "O",
-    "B": "B",
-}
-
-
-def cube_to_facelets(cube: Cube) -> dict[str, list[str]]:
-    faces = {f: ["?"] * 9 for f in CENTRE_COLOURS.keys()}
-
-    for f, col_c in CENTRE_COLOURS.items():
-        faces[f][4] = col_c
-
-    # Corners
-    for pos in range(8):
-        cubie = cube.corners_perm[pos]
-        ori = cube.corners_orient[pos] % 3
-
-        canon_faces = corner_color_order[cubie]
-        (f1, i1), (f2, i2), (f3, i3) = corner_facelets[pos]
-        face_triplet = [(f1, i1), (f2, i2), (f3, i3)]
-
-        for k, (face, idx) in enumerate(face_triplet):
-            logical_index = (k - ori) % 3
-            logical_face = canon_faces[logical_index]
-            faces[face][idx] = CENTRE_COLOURS[logical_face]
-
-    # Edges
-    for pos in range(12):
-        cubie = cube.edges_perm[pos]
-        ori = cube.edges_orient[pos] % 2
-
-        fA, fB = edge_color_order[cubie]
-        cA, cB = CENTRE_COLOURS[fA], CENTRE_COLOURS[fB]
-
-        (f1, i1), (f2, i2) = edge_facelets[pos]
-
-        if ori == 0:
-            faces[f1][i1] = cA
-            faces[f2][i2] = cB
-        else:
-            faces[f1][i1] = cB
-            faces[f2][i2] = cA
-
-    return faces
-
-# FACE_DISPLAY_MAP = {
-#     "U": [0,1,2, 3,4,5, 6,7,8],
-#     "D": [0,7,2, 3,4,5, 6,1,8],
-#     "F": [0,1,2, 3,4,5, 6,7,8],
-#     "B": [0,1,2, 5,4,3, 6,7,8],
-#     "L": [0,1,2, 3,4,5, 6,7,8],
-#     "R": [0,1,2, 3,4,5, 6,7,8],
-# }
 FACE_DISPLAY_MAP = {
     "U": list(range(9)),
     "D": list(range(9)),
@@ -97,6 +41,14 @@ FACE_DISPLAY_MAP = {
     "R": list(range(9)),
 }
 
+# FACE_DISPLAY_MAP = {
+#     "U": [0,1,2, 3,4,5, 6,7,8],
+#     "D": [0,7,2, 3,4,5, 6,1,8],
+#     "F": [0,1,2, 3,4,5, 6,7,8],
+#     "B": [0,1,2, 5,4,3, 6,7,8],
+#     "L": [0,1,2, 3,4,5, 6,7,8],
+#     "R": [0,1,2, 3,4,5, 6,7,8],
+# }
 
 
 def _remap_face_for_display(name: str, face: list[str]) -> list[str]:
@@ -114,6 +66,7 @@ def _rows_from_face(face_list: list[str]) -> list[str]:
 
 def print_ascii_cube(cube: Cube) -> None:
     faces = cube_to_facelets(cube)
+    
 
     U = _rows_from_face(_remap_face_for_display("U", faces["U"]))
     F = _rows_from_face(_remap_face_for_display("F", faces["F"]))

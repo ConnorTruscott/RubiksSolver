@@ -54,7 +54,7 @@ edge_facelets = [
 ]
 
 #Edge colour order: (first face, second face) for the oriented edge cubie index
-edge_color_order = [
+edge_colour_order = [
     ("U", "R"),
     ("U", "F"),
     ("U", "L"),
@@ -140,7 +140,7 @@ def facelets_to_cubie(facelets):
         # match to cubie index
         found = False
         for e_idx in range(12):
-            fA, fB = edge_color_order[e_idx]
+            fA, fB = edge_colour_order[e_idx]
             cA = centres[fA]
             cB = centres[fB]
 
