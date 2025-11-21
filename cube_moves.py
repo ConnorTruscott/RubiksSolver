@@ -63,7 +63,7 @@ def apply_move(cube, move):
     Returns a NEW cube object.
     """
 
-    # --- Parse move ---
+    # Parse move
     face = move[0]
     suffix = move[1:] if len(move) > 1 else ""
 
@@ -88,7 +88,7 @@ def apply_move(cube, move):
         old_ep = new_cube.edges_perm[:]
         old_eo = new_cube.edges_orient[:]
 
-        # start from old; we'll overwrite the moved positions
+        # start from old, overwrite the moved positions
         new_cp = old_cp[:]
         new_co = old_co[:]
         new_ep = old_ep[:]
@@ -102,12 +102,12 @@ def apply_move(cube, move):
             corner_cycles_to_use = corner_cycles[face]
             edge_cycles_to_use   = edge_cycles[face]
 
-        # --- corners ---
+        # corners
         for cycle in corner_cycles_to_use:
             L = len(cycle)
             for i in range(L):
                 dst = cycle[i]
-                src = cycle[(i - 1) % L]   # matches your apply_cycle direction
+                src = cycle[(i - 1) % L]
 
                 # permute cubies
                 new_cp[dst] = old_cp[src]
@@ -116,7 +116,7 @@ def apply_move(cube, move):
                 twist = corner_orient[face][dst]
                 new_co[dst] = (old_co[src] + twist) % 3
 
-        # --- edges ---
+        # edges
         for cycle in edge_cycles_to_use:
             L = len(cycle)
             for i in range(L):
