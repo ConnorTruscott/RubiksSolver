@@ -60,7 +60,7 @@ def solve_cross(start_cube: Cube, max_depth: int = 8) -> tuple[Cube, list[str]]:
     Solve the white cross on the D face by BFS over edge state.
     Returns (solved_cube, move_list).
 
-    max_depth controls how far we search; 8 is usually enough for cross.
+    max_depth controls how far we search; 8 seems to be sufficient for cross.
     """
 
     if is_white_cross_solved(start_cube):
