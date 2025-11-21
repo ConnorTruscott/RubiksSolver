@@ -1,6 +1,4 @@
 .vs
 quick_test.py
-__pycache__
-./tests/__pycache__
+/pycache/*
 .pytest_cache
-./visualisation/__pycache__
